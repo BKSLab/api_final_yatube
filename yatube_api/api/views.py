@@ -4,7 +4,10 @@ from django.utils.functional import cached_property
 
 from rest_framework import filters, mixins, viewsets
 from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import (
+    IsAuthenticated,
+    IsAuthenticatedOrReadOnly,
+)
 from rest_framework.serializers import BaseSerializer
 
 from api.permissions import IsOwnerOrReadOnly
@@ -24,7 +27,7 @@ class PostViewSet(viewsets.ModelViewSet):
     pagination_class = LimitOffsetPagination
 
     def perform_create(
-        self, serializer: BaseSerializer[PostSerializer]
+        self, serializer: BaseSerializer[PostSerializer],
     ) -> None:
         serializer.save(author=self.request.user)
 
@@ -51,7 +54,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         return self._post.comments.all()
 
     def perform_create(
-        self, serializer: BaseSerializer[CommentSerializer]
+        self, serializer: BaseSerializer[CommentSerializer],
     ) -> None:
         serializer.save(
             author=self.request.user,
@@ -60,7 +63,9 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 
 class FollowCreateAndListViewSet(
-    mixins.CreateModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet
+    mixins.CreateModelMixin,
+    mixins.ListModelMixin,
+    viewsets.GenericViewSet,
 ):
     queryset = Follow.objects.all()
     serializer_class = FollowSerializer
@@ -72,7 +77,7 @@ class FollowCreateAndListViewSet(
         return self.request.user.follower.all()
 
     def perform_create(
-        self, serializer: BaseSerializer[FollowSerializer]
+        self, serializer: BaseSerializer[FollowSerializer],
     ) -> None:
         serializer.save(
             user=self.request.user,
